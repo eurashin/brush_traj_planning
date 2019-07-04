@@ -41,6 +41,8 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   pcl::PCLPointCloud2ConstPtr cloud_ptr(cloud);
   pcl_conversions::toPCL(*cloud_msg, *cloud);
 
+
+
   // Preprocess the cloud by...
   // ...removing distant points
   const float depth_limit = 1.0;
@@ -50,7 +52,7 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   pass.setFilterLimits (0, depth_limit);
   pcl::PointCloud<pcl::PointXYZ>::Ptr tempCloud (new pcl::PointCloud<pcl::PointXYZ>); 
   pass.filter (*cloud);
-  
+    
   // ... and downsampling the point cloud
   pcl::PCLPointCloud2 cloud_filtered; 
   const float voxel_grid_size = 0.005f;
@@ -58,8 +60,7 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   vox_grid.setInputCloud (cloud_ptr);
   vox_grid.setLeafSize (voxel_grid_size, voxel_grid_size, voxel_grid_size);
   vox_grid.filter (cloud_filtered);
-
-
+  
   // Convert to PCL data type
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr simple_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
   pcl::fromPCLPointCloud2(cloud_filtered,*simple_cloud);

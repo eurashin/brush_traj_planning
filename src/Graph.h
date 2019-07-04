@@ -94,6 +94,78 @@ class Graph {
     }
 
 
+    void export_vtk_paths(vector< vector<int> > paths, char* dirname) {
+        for(int i=0; i<paths.size(); i++) { // Export each path to a separate .PLY file
+            // Open a new file in dir
+            ofstream myfile;
+            string sdirname = dirname; 
+            myfile.open(sdirname +"/path" + to_string(i) + ".vtk");
+            
+            // Set up headers
+            myfile << "# vtk DataFile Version 3.0" << endl; 
+            myfile << "vtk output" << endl; 
+            myfile << "ASCII" << endl; 
+            myfile << "DATASET POLYDATA" << endl; 
+            myfile << "POINTS " << paths[i].size() << " float " << endl;
+
+            // Create points
+            set<int> points; 
+            for(int j=0; j<paths[i].size(); j++) {
+                int point_index = paths[i].at(j); 
+                Point point = cells[point_index].get_coord();
+                points.insert(point_index);
+                myfile << point.x << " " << point.y << " " << point.z << endl;            
+            }
+
+            // Create lines
+            int total_lines = paths[i].size() - 1; 
+            myfile << "LINES " << total_lines << " " << total_lines * 3 << endl; 
+            
+            for(int j=0; j<paths[i].size() - 1; j++) {
+                std::set<int>::iterator it1 = points.find(paths.at(i).at(j));
+                std::set<int>::iterator it2 = points.find(paths.at(i).at(j+1));
+
+                myfile << "2 " << distance(points.begin(), it1)  << " " << distance(points.begin(), it2) << endl;
+            }
+         
+            myfile.close();
+        }
+    }
+    
+    void export_ply_paths(vector< vector<int> > paths, char* dirname) {
+        for(int i=0; i<paths.size(); i++) { // Export each path to a separate .PLY file
+            // Open a new file in dir
+            ofstream myfile;
+            string sdirname = dirname; 
+            myfile.open(sdirname +"/path" + to_string(i) + ".ply");
+        
+            // Set up headers
+            myfile << "ply" << endl; 
+            myfile << "format ascii 1.0" << endl;
+            myfile << "element vertex " << paths[i].size() << endl; 
+            myfile << "property float x" << endl;  
+            myfile << "property float y" << endl;  
+            myfile << "property float z" << endl;  
+            myfile << "property float nx" << endl;  
+            myfile << "property float ny" << endl;  
+            myfile << "property float nz" << endl;  
+            myfile << "end_header" << endl; 
+
+             
+            // Create points
+            set<int>::iterator it; 
+            for(int j=0; j<paths[i].size(); j++ ) {
+                int point_index = paths[i].at(j); 
+                Point point = cells[point_index].get_coord();
+                Point norm = cells[point_index].get_normal(); 
+                myfile << point.x << " " << point.y * -1 << " " << point.z * -1<< 
+                   " " << norm.x << " " << norm.y << " " << norm.z << endl; 
+            }
+            myfile.close();
+        }
+    }
+
+
     // Creates a point cloud to export to VTK for visualization
     void export_vtk(vector< vector<int> > paths, char* filename) {
         ofstream myfile; 
@@ -171,43 +243,13 @@ class Graph {
         for(it = points.begin(); it!=points.end(); it++ ) {
             Point point = cells[*it].get_coord(); 
             Point norm = cells[*it].get_normal(); 
-            myfile << point.x << " " << point.y << " " << point.z << 
+            myfile << point.x << " " << point.y  * -1<< " " << point.z * -1 << 
                " " << norm.x << " " << norm.y << " " << norm.z << endl; 
         }
 
         myfile.close();
     }
     
-    void export_ply(vector<int> path, char* filename) {
-        ofstream myfile; 
-        myfile.open(filename);
-        
-
-        // Set up headers
-        myfile << "ply" << endl; 
-        myfile << "format ascii 1.0" << endl;
-        myfile << "element vertex " << path.size() << endl; 
-        myfile << "property float x" << endl;  
-        myfile << "property float y" << endl;  
-        myfile << "property float z" << endl;  
-        myfile << "property float nx" << endl;  
-        myfile << "property float ny" << endl;  
-        myfile << "property float nz" << endl;  
-        myfile << "end_header" << endl; 
-
-         
-        // Create points
-        vector<int>::iterator it; 
-        for(it = path.begin(); it!=path.end(); it++ ) {
-            Point point = cells[*it].get_coord(); 
-            Point norm = cells[*it].get_normal(); 
-            myfile << point.x << " " << point.y  * -1 << " " << point.z * -1<< 
-               " " << norm.x << " " << norm.y << " " << norm.z << endl; 
-        }
-
-        myfile.close();
-    }
-
     // Find the value of a point that is n percent up the hair
     double y_percent(double n) {
         double range = max_y - min_y; 

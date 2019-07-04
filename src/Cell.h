@@ -1,3 +1,6 @@
+#ifndef CELL
+#define CELL
+
 #include <iostream>
 #include <math.h>
 #include <string>
@@ -139,3 +142,5 @@ class Cell {
        } 
 
 };
+
+#endif

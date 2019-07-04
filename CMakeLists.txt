@@ -3,7 +3,7 @@ project(brush_traj_planning)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 #add_compile_options(-std=c++11)
-add_compile_options(-std=c++11 -g)
+add_compile_options(-std=c++17 -g)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -16,6 +16,10 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   image_transport
   cv_bridge
+  genmsg
+  actionlib_msgs
+  actionlib
+  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -225,12 +229,18 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 add_executable(surface_matching src/surface_matching.cpp)
 target_link_libraries(surface_matching ${OpenCV_LIBRARIES})
 
+find_package(VTK REQUIRED NO_MODULE)
 add_executable(create_model src/create_model.cpp)
 target_link_libraries(create_model ${catkin_LIBRARIES})
 target_link_libraries(create_model ${OpenCV_LIBRARIES})
 target_link_libraries(create_model ${PCL_LIBRARIES})
+target_link_libraries(create_model ${VTK_LIBRARIES})
 
-find_package(VTK REQUIRED NO_MODULE)
-add_executable(plan src/main.cpp)
-target_link_libraries(plan ${catkin_LIBRARIES})
-target_link_libraries(plan ${VTK_LIBRARIES})
+find_package(ada_server REQUIRED)
+include_directories(${ada_server_INCLUDE_DIRS})
+add_executable(follow_path src/follow_path.cpp)
+target_link_libraries(
+   follow_path
+  ${catkin_LIBRARIES}
+)
+

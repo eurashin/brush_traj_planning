@@ -1,3 +1,7 @@
+//Uses A* to plan a downwards path for the brush on a given .vtk file
+#ifndef PLAN
+#define PLAN
+
 #include <iostream>  
 #include <set>
 #include <vector>
@@ -8,11 +12,11 @@ using namespace std;
  
 
 //Input: filename of vtk head model, upper edge threshold, lower edge threshold 
-int main(int argc, char** argv) 
+int a_star_path(char* mesh_filename, char* path_filename) 
 { 
     // prints hello world 
     cout<<"Hello World";
-    Graph graph(argv[1]);
+    Graph graph(mesh_filename);
     cout << "I finished" << endl;
     cout << graph.size() << endl;  
     // Find starting points, edge points above a certain threshold
@@ -127,10 +131,13 @@ int main(int argc, char** argv)
     }
 
     // Export all paths
+    graph.export_ply_paths(paths, path_filename);
+    graph.export_vtk_paths(paths, "vtk_paths");
     graph.export_vtk(paths, "paths.vtk");
-    graph.export_ply(paths[0], argv[2]);
-    cout << "DIUD I DO IT" << endl; 
+//    graph.export_ply(paths[0], argv[2]);
+    cout << "exported to " << path_filename << endl; 
 
-    // Export paths as point clouds with normals
     return 0; 
-} 
+}
+
+#endif
