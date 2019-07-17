@@ -26,13 +26,13 @@ using namespace std;
 // file of the cloud, filename of output mesh
 int main (int argc, char** argv)
 {
-
   pcl::PointCloud <pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud <pcl::PointXYZRGB>);
   if ( pcl::io::loadPLYFile <pcl::PointXYZRGB> (argv[1], *cloud) == -1 )
   {
     std::cout << "Cloud reading failed." << std::endl;
     return (-1);
   }
+
 
   // Find color segmented clusters
   std::vector<pcl::PointIndices> clusters; 
@@ -64,7 +64,7 @@ int main (int argc, char** argv)
   
   // Downsampling the point cloud for meshing
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr hair_cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
-  const float voxel_grid_size = 0.008f;
+  const float voxel_grid_size = 0.002f;
   pcl::VoxelGrid<pcl::PointXYZRGB> vox_grid;
   vox_grid.setInputCloud (subcloud);
   vox_grid.setLeafSize (voxel_grid_size, voxel_grid_size, voxel_grid_size);
@@ -75,10 +75,14 @@ int main (int argc, char** argv)
   copyPointCloud(*hair_cloud, *final_cloud);
 
   // Save the mesh file
-  to_mesh(final_cloud, argv[2]);
+  flipCloud(final_cloud); 
+  char hairmeshname[80];
+  strcpy(hairmeshname, argv[2]); 
+  strcat(hairmeshname, ".vtk");
+  to_mesh(final_cloud, hairmeshname, true);
 
   // Plan paths from our given mesh model
-  a_star_path(argv[2], argv[3]);  
+  a_star_path(hairmeshname, argv[3]);  
 
 
   return (0);

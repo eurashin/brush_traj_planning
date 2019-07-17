@@ -14,8 +14,9 @@
 #include "opencv2/surface_matching/ppf_helpers.hpp"
 #include "opencv2/surface_matching.hpp"
 
-#include <geometry_msgs/Pose.h>
+#include <geometry_msgs/Transform.h>
 #include <geometry_msgs/Point.h>
+#include <geometry_msgs/Vector3.h>
 #include <geometry_msgs/Quaternion.h>
 
 using namespace cv;
@@ -68,21 +69,27 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
     // Transform model to fit scene
     Pose3DPtr result = resultsSub[0];
-    geometry_msgs::Point point; 
-    point.x = result->t[0]; 
-    point.y = result->t[1]; 
-    point.z = result->t[2];
+    tf::Vector3 position(result->t[0], result->t[1], result->t[2]);
+    tf::Quaternion quat(result->q[0], result->q[1], result->q[2], result->q[3]);
+    tf::Transform transform(quat, position);
 
-    geometry_msgs::Quaternion quat; 
-    quat.x = result->q[0]; 
-    quat.y = result->q[1]; 
-    quat.z = result->q[2]; 
-    quat.w = result->q[3]; 
+    tf::TransformListener tf_listener;
+    sensor_msgs::PointCloud2 cloud_out;
+    tf::StampedTransform transform_stamped;
+    try {
+        tf_listener.waitForTransform("/map", "/camera_depth_optical_frame", ros::Time::now(), ros::Duration(1.0));
+        tf_listener.lookupTransform("/map", "/camera_depth_optical_frame", ros::Time(0), transform_stamped);    
+         
+    }
+    catch (tf::TransformException &ex) {
+        ROS_ERROR("%s", ex.what());
+    }
 
-    geometry_msgs::Pose pose; 
-    pose.position = point; 
-    pose.orientation = quat; 
-    transform_pub.publish(pose); 
+    tf::Transform new_transform(transform_stamped.getRotation(), transform_stamped.getOrigin());
+    tf::Transform final_transform = new_transform * transform;
+    geometry_msgs::Transform msg; 
+    tf::transformTFToMsg(final_transform, msg);
+    transform_pub.publish(msg); 
 
     // Broadcast topic with new alignment
     Mat aligned_model = transformPCPose(model, result->pose);
@@ -123,7 +130,7 @@ int main(int argc, char** argv)
 
     // Create a ROS publisher for the original and aligned point clouds 
     printf("Create publishers\n");
-    transform_pub = nh.advertise<geometry_msgs::Pose> ("transformation", 1);
+    transform_pub = nh.advertise<geometry_msgs::Transform> ("transformation", 1);
     aligned_pub = nh.advertise<sensor_msgs::PointCloud2> ("aligned_point_cloud", 1);
 
     // Create a ROS subscriber for the input point cloud

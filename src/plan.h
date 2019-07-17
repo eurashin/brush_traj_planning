@@ -15,29 +15,35 @@ using namespace std;
 int a_star_path(char* mesh_filename, char* path_filename) 
 { 
     // prints hello world 
-    cout<<"Hello World";
     Graph graph(mesh_filename);
-    cout << "I finished" << endl;
     cout << graph.size() << endl;  
+
     // Find starting points, edge points above a certain threshold
     double upper_threshold = graph.y_percent(0.8);   
-    vector<int> starts; 
+    vector<int> starts;
     graph.find_edge_points(upper_threshold, 1, starts);
 
-    // Save the start cells
-    cout << "START CELLS: " << endl; 
-    vector<Cell> start_cells; 
+    /*
+    // Find ending points
+    double lower_threshold = graph.y_percent(0.1);   
+    vector<int> ends;
+    graph.find_edge_points(lower_threshold, 0, ends);
+    
+    // Find pairs
+    vector<Cell> start_cells;
+    
     for(int i=0; i<starts.size(); i++) {
-        cout << starts[i] << "  ";
-        //start_cells.push_back(graph.at(starts[i])); 
+        start_cells.push_back(graph.at(starts[i])); 
     }
+
     cout << endl; 
     //export_vtk(start_cells, "starting_points.vtk"); 
+    */
 
     // Goal is simply to reach a bottom threshold
     double goal = graph.y_percent(0.1);
-    cout << "THRESHOLD: " << goal << endl; 
-    
+    vector<int> ends; 
+    vector<double> path_lengths; 
     vector< vector<int > > paths; 
 
     for(int k=0; k<starts.size(); k++) {
@@ -60,7 +66,7 @@ int a_star_path(char* mesh_filename, char* path_filename)
 
         // y-value is the heuristic
         // For the first value, the score is completely the heuristic
-        f_score[start] = h_downwards(graph.at(start), graph.at(goal)); 
+        f_score[start] = h_downwards(graph.at(start), goal); 
         g_score[start] = 0; 
         int current = start;
 
@@ -75,25 +81,41 @@ int a_star_path(char* mesh_filename, char* path_filename)
                 } 
             }
 
-            /*
-            cout << "Visiting node: " << current << endl; 
-            cout << "Open set has: " << open_set.size() << endl; 
-            cout << "Closed set has: " << closed_set.size() << endl; 
-            cout << "Current coord: " << graph.at(current).get_coord().y << endl; 
-            cout << "Goal: " << goal << endl << endl; 
-            */
-
             // Goal is met...finish
             if(graph.at(current).get_coord().y <= goal) {
-                // Find the path from start to goal
-                vector<int> path;
-                reconstruct_path(came_from, start, current, path);
-                paths.push_back(path);
-                cout << "Final path: " << endl; 
-                for(int i=0; i<path.size(); i++) {
-                    cout << path[i] << "  "; 
+                cout << "NUMBER OF STORED PATHS: " << paths.size() << endl; 
+                // Has the end cell already been visited?
+                vector<int>::iterator endit = find(ends.begin(), ends.end(), current);
+                if(endit != ends.end() && paths.size() > 0) { // Already been visited
+                    // Is this path shorter? 
+                    double path_length = dist_between(graph.at(start), graph.at(current));
+                    cout << "Found end: " << current << endl; 
+                    cout << "Found path distance at: " << path_lengths[*endit] << endl; 
+                    cout << "Found path size: " << paths[*endit].size() << endl; 
+                    
+                    if(path_length < path_lengths[*endit]) { // Update
+                        vector<int> path;
+                        reconstruct_path(came_from, start, current, path);
+                        paths[*endit] = path;
+                        path_lengths[*endit] = path_length; 
+                        cout << "Updated path " << *endit << " with path length " << path.size() << endl; 
+                    }
                 }
-                cout << endl; 
+                else {
+                    // Push back new path
+                    vector<int> path;
+                    reconstruct_path(came_from, start, current, path);
+
+                    paths.push_back(path);
+                    ends.push_back(current);
+                    path_lengths.push_back(dist_between(graph.at(start), graph.at(current)));
+                    
+                    cout << "Added end: " << ends.back() << endl; 
+                    cout << "Added path distance at: " << path_lengths.back() << endl; 
+                    cout << "Found path size: " << paths.back().size() << endl; 
+                } 
+                 
+
             }
             else { 
                 // Update visited sets
@@ -122,7 +144,7 @@ int a_star_path(char* mesh_filename, char* path_filename)
                         if(tentative_g_score < g_score[neighbor_index]) { // Found shorter path
                             came_from[neighbor_index] = current; 
                             g_score[neighbor_index] = tentative_g_score; 
-                            f_score[neighbor_index] = g_score[neighbor_index] + h_downwards(neighbor_cell, graph.at(goal));  
+                            f_score[neighbor_index] = g_score[neighbor_index] + h_downwards(neighbor_cell, goal);  
                         }
                     }
                 }

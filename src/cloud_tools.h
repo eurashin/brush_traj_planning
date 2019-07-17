@@ -16,6 +16,7 @@
 
 // PCL specific includes
 #include <pcl_ros/point_cloud.h>
+#include <pcl_ros/transforms.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/point_cloud.h>
@@ -34,7 +35,6 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/fpfh.h>
 #include <pcl/registration/ia_ransac.h>
-
 #include <pcl/search/search.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/search/kdtree.h>
@@ -43,9 +43,55 @@
 #include <pcl/io/vtk_io.h>
 #include <pcl/impl/point_types.hpp>
 
+
+#include <tf/transform_listener.h>
+#include <geometry_msgs/TransformStamped.h>
+
 using namespace std; 
 
 const int DIM = 3; 
+
+void transform_pointcloud(pcl::PointCloud<pcl::PointNormal> & cloud, pcl::PointCloud<pcl::PointNormal> & transformed_cloud) {
+    // Convert to message type
+    sensor_msgs::PointCloud2 cloud_msg; 
+    pcl::toROSMsg(cloud, cloud_msg);
+
+    // Get the tf from /depth_optical_frame to /map
+    tf::TransformListener tf_listener;
+    sensor_msgs::PointCloud2 cloud_out;
+
+    tf::StampedTransform transform_stamped;
+    try {
+        tf_listener.waitForTransform("/map", "/camera_depth_optical_frame", ros::Time::now(), ros::Duration(1.0));
+        tf_listener.lookupTransform("/map", "/camera_depth_optical_frame", ros::Time(0), transform_stamped);
+        pcl_ros::transformPointCloud(cloud, transformed_cloud, transform_stamped);
+        
+    }
+    catch (tf::TransformException &ex) {
+        ROS_ERROR("%s", ex.what());
+    }
+}
+
+void transform_pointcloud(pcl::PointCloud<pcl::PointXYZ> & cloud, pcl::PointCloud<pcl::PointXYZ> & transformed_cloud) {
+    // Convert to message type
+    sensor_msgs::PointCloud2 cloud_msg; 
+    pcl::toROSMsg(cloud, cloud_msg);
+
+    // Get the tf from /depth_optical_frame to /map
+    tf::TransformListener tf_listener;
+    sensor_msgs::PointCloud2 cloud_out;
+
+    tf::StampedTransform transform_stamped;
+    try {
+        tf_listener.waitForTransform("/map", "/camera_depth_optical_frame", ros::Time::now(), ros::Duration(1.0));
+        tf_listener.lookupTransform("/map", "/camera_depth_optical_frame", ros::Time(0), transform_stamped);
+        pcl_ros::transformPointCloud(cloud, transformed_cloud, transform_stamped);
+        
+    }
+    catch (tf::TransformException &ex) {
+        ROS_ERROR("%s", ex.what());
+    }
+}
 
 void filter(const sensor_msgs::PointCloud2ConstPtr & cloud_msg, pcl::PointCloud<pcl::PointXYZ> & cloud) {
     pcl::PCLPointCloud2* cloud2 = new pcl::PCLPointCloud2; 
@@ -158,10 +204,7 @@ void color_segmentation(const pcl::PointCloud<pcl::PointXYZRGB>::Ptr & cloud, st
     reg.extract (clusters);
 }
 
-void to_mesh(pcl::PointCloud<pcl::PointXYZ>::Ptr & cloud, const char* filename) {
-  // Correct orientation
-  flipCloud(cloud); 
-  
+void to_mesh(pcl::PointCloud<pcl::PointXYZ>::Ptr & cloud, string filename, bool vtk) {
   // Normal estimation*
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> n;
   pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal>);
@@ -202,7 +245,10 @@ void to_mesh(pcl::PointCloud<pcl::PointXYZ>::Ptr & cloud, const char* filename) 
   gp3.setSearchMethod (tree2);
   gp3.reconstruct (triangles);
 
-  pcl::io::saveVTKFile (filename, triangles);
+  if(vtk)
+      pcl::io::saveVTKFile (filename, triangles);
+  else 
+      pcl::io::savePLYFile(filename, triangles); 
 }
 
 // Segment the point cloud based on color

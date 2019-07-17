@@ -65,7 +65,6 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr simple_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
   pcl::fromPCLPointCloud2(cloud_filtered,*simple_cloud);
   
-  //flipCloud(simple_cloud);
   pcl::io::savePLYFileASCII(filename + ".ply", *simple_cloud);
   ROS_INFO("Supposedly I saved...\n");
   
@@ -73,6 +72,13 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   pcl::fromPCLPointCloud2(cloud_filtered,*simple_cloud_colorless);
   pcl::io::savePLYFileASCII(filename + "_no_color.ply", *simple_cloud_colorless);
 
+  // Export to mesh for IK
+  pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  transform_pointcloud(*simple_cloud_colorless, *transformed_cloud);
+  char modelname[80];
+  strcpy(modelname, filename.c_str()); 
+  strcat(modelname, "_mesh.ply");
+  to_mesh(transformed_cloud, modelname, false);
 
   sub.shutdown();
 }
