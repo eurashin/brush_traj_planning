@@ -35,7 +35,7 @@ std::string filename;
 void 
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 {
-  ROS_INFO("ENTERED THE CALLBACK\n");
+  ROS_INFO("ENTERED THE CALLBACK wubba\n");
   // Container for original & filtered data
   pcl::PCLPointCloud2* cloud = new pcl::PCLPointCloud2; 
   pcl::PCLPointCloud2ConstPtr cloud_ptr(cloud);
@@ -52,7 +52,7 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   pass.setFilterLimits (0, depth_limit);
   pcl::PointCloud<pcl::PointXYZ>::Ptr tempCloud (new pcl::PointCloud<pcl::PointXYZ>); 
   pass.filter (*cloud);
-    
+   
   // ... and downsampling the point cloud
   pcl::PCLPointCloud2 cloud_filtered; 
   const float voxel_grid_size = 0.005f;
@@ -65,6 +65,8 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr simple_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
   pcl::fromPCLPointCloud2(cloud_filtered,*simple_cloud);
   
+
+
   pcl::io::savePLYFileASCII(filename + ".ply", *simple_cloud);
   ROS_INFO("Supposedly I saved...\n");
   
@@ -105,7 +107,7 @@ int
 main (int argc, char** argv)
 {
   // Initialize ROS
-  ros::init (argc, argv, "process_pcl");
+  ros::init (argc, argv, "brush_traj_planning");
   ros::NodeHandle nh;
   ros::NodeHandle private_nh("~");
    
@@ -115,11 +117,12 @@ main (int argc, char** argv)
  
 
   filename = (std::string)argv[1];
-     
+  std::cout << filename << std::endl; 
+
   // Create a ROS subscriber for the input point cloud
   //ros::Subscriber sub = nh.subscribe<sensor_msgs::PointCloud2> (input_stream, 1, cloud_cb);
-  sub = nh.subscribe<sensor_msgs::PointCloud2> ("camera/depth_registered/points", 1, cloud_cb);
-  sub_image = nh.subscribe<sensor_msgs::Image> ("camera/rgb/image_rect_color", 1, image_cb);
+  sub = nh.subscribe<sensor_msgs::PointCloud2> ("/camera/depth_registered/points", 1, cloud_cb);
+  sub_image = nh.subscribe<sensor_msgs::Image> ("/camera/rgb/image_rect_color", 1, image_cb);
 
   // Create a ROS publisher for the output point cloud
   // pub = nh.advertise<sensor_msgs::PointCloud2> ("woahitsmyoutput", 1);

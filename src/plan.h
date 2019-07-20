@@ -16,12 +16,16 @@ int a_star_path(char* mesh_filename, char* path_filename)
 { 
     // prints hello world 
     Graph graph(mesh_filename);
+    graph.at(1).print();
     cout << graph.size() << endl;  
 
     // Find starting points, edge points above a certain threshold
-    double upper_threshold = graph.y_percent(0.8);   
+    double upper_threshold = graph.y_percent(0.9);   
     vector<int> starts;
     graph.find_edge_points(upper_threshold, 1, starts);
+
+    cout << "Number of start cells: " << starts.size() << endl; 
+
 
     /*
     // Find ending points
@@ -41,16 +45,18 @@ int a_star_path(char* mesh_filename, char* path_filename)
     */
 
     // Goal is simply to reach a bottom threshold
-    double goal = graph.y_percent(0.1);
+    double goal = graph.y_percent(0.3);
     vector<int> ends; 
     vector<double> path_lengths; 
     vector< vector<int > > paths; 
+    
+    cout << "Upper threshold: " << upper_threshold << endl; 
+    cout << "Lower threshold: " << goal << endl; 
 
     for(int k=0; k<starts.size(); k++) {
         // Index is always cellID - numberOfPoints
         int start = starts[k];
-        
-        
+    
         // Initialize A* helpers
         set<int> open_set;
         open_set.insert(start); 
@@ -70,7 +76,7 @@ int a_star_path(char* mesh_filename, char* path_filename)
         g_score[start] = 0; 
         int current = start;
 
-        while(open_set.size() > 0 && graph.at(current).get_coord().y > goal) {
+        while(open_set.size() > 0) {
             // Find cell in open set with lowest f score
             set<int>::iterator it = open_set.begin(); 
             double min_f = f_score[*it];
@@ -114,6 +120,8 @@ int a_star_path(char* mesh_filename, char* path_filename)
                     cout << "Added path distance at: " << path_lengths.back() << endl; 
                     cout << "Found path size: " << paths.back().size() << endl; 
                 } 
+
+                break; 
                  
 
             }
@@ -150,6 +158,7 @@ int a_star_path(char* mesh_filename, char* path_filename)
                 }
             }
         }
+        cout << endl; 
     }
 
     // Export all paths

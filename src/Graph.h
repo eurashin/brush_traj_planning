@@ -342,7 +342,8 @@ class Graph {
         for(int i=0; i<cells.size(); i++) {
             Cell cell = cells.at(i); 
             Point center = cell.get_coord(); 
-            bool edge = cell.is_edge(); // Is it an edge cell?
+            //bool edge = cell.is_edge(); // Is it an edge cell?
+            bool edge = true; // Is it an edge cell?
              
             if(above_or_below == 1) { // Find points above threshold
                 if(edge && center.y >= threshold) {
