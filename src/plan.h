@@ -97,7 +97,6 @@ int a_star_path(char* mesh_filename, char* path_filename)
                     double path_length = dist_between(graph.at(start), graph.at(current));
                     cout << "Found end: " << current << endl; 
                     cout << "Found path distance at: " << path_lengths[*endit] << endl; 
-                    cout << "Found path size: " << paths[*endit].size() << endl; 
                     
                     if(path_length < path_lengths[*endit]) { // Update
                         vector<int> path;
@@ -118,7 +117,6 @@ int a_star_path(char* mesh_filename, char* path_filename)
                     
                     cout << "Added end: " << ends.back() << endl; 
                     cout << "Added path distance at: " << path_lengths.back() << endl; 
-                    cout << "Found path size: " << paths.back().size() << endl; 
                 } 
 
                 break; 

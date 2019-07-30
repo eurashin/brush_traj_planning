@@ -83,7 +83,7 @@ bool send_waypoints(actionlib::SimpleActionClient<ada_server::WaypointsAction> &
 
         geometry_msgs::Pose pose;
         pose.position = p;
-        pose.position.x -= (0.039 * 2); // Account for the distance of the comb
+        pose.position.x -= (0.039); // Account for the distance of the comb
         pose.orientation = quat;
 
         std_msgs::Header header; 

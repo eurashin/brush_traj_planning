@@ -101,7 +101,7 @@ void filter(const sensor_msgs::PointCloud2ConstPtr & cloud_msg, pcl::PointCloud<
   
     // Preprocess the cloud by...
     // ...removing distant points
-    const float depth_limit = 1.0;
+    const float depth_limit = 1.5;
     pcl::PassThrough<pcl::PCLPointCloud2> pass;
     pass.setInputCloud (cloud2_ptr);
     pass.setFilterFieldName ("z");
@@ -189,7 +189,7 @@ void color_segmentation(const pcl::PointCloud<pcl::PointXYZRGB>::Ptr & cloud, st
     pcl::PassThrough<pcl::PointXYZRGB> pass;
     pass.setInputCloud (cloud);
     pass.setFilterFieldName ("z");
-    pass.setFilterLimits (0.0, 1.0);
+    pass.setFilterLimits (0.0, 1.5);
     pass.filter (*indices);
 
     pcl::RegionGrowingRGB<pcl::PointXYZRGB> reg;
@@ -197,8 +197,8 @@ void color_segmentation(const pcl::PointCloud<pcl::PointXYZRGB>::Ptr & cloud, st
     reg.setIndices (indices);
     reg.setSearchMethod (tree);
     reg.setDistanceThreshold (10);
-    reg.setPointColorThreshold (6);
-    reg.setRegionColorThreshold (5);
+    reg.setPointColorThreshold (2);
+    reg.setRegionColorThreshold (2);
     reg.setMinClusterSize (600);
 
     reg.extract (clusters);

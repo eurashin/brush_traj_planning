@@ -45,7 +45,7 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
 
   // Preprocess the cloud by...
   // ...removing distant points
-  const float depth_limit = 1.0;
+  const float depth_limit = 1.5;
   pcl::PassThrough<pcl::PCLPointCloud2> pass;
   pass.setInputCloud (cloud_ptr);
   pass.setFilterFieldName ("z");
@@ -73,14 +73,6 @@ cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg)
   pcl::PointCloud<pcl::PointXYZ>::Ptr simple_cloud_colorless(new pcl::PointCloud<pcl::PointXYZ>);
   pcl::fromPCLPointCloud2(cloud_filtered,*simple_cloud_colorless);
   pcl::io::savePLYFileASCII(filename + "_no_color.ply", *simple_cloud_colorless);
-
-  // Export to mesh for IK
-  pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cloud(new pcl::PointCloud<pcl::PointXYZ>);
-  transform_pointcloud(*simple_cloud_colorless, *transformed_cloud);
-  char modelname[80];
-  strcpy(modelname, filename.c_str()); 
-  strcat(modelname, "_mesh.ply");
-  to_mesh(transformed_cloud, modelname, false);
 
   sub.shutdown();
 }
