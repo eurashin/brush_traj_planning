@@ -1,8 +1,15 @@
-// CREATES MODEL WITH PATHS
+// CREATES MODEL WITH PATHS: employs color segmentation and path planning.
+//
 // Inputs: 
 // 1) color pointcloud .ply filename
 // 2) filename for newly exported .vtk model, NO EXTENSION 
 // 3) name of the directory to output paths
+//
+// Outputs: 
+// 1) .ply files with waypoint coordinates for every path: [arg3/]path0.ly, [arg3/]path1.ply ... 
+// 2) .ply file that is the "mesh" for the aikido world to integrate: [arg2].ply
+// 3) .vtk file for mesh visualization: [arg2.vtk]
+// 4) paths.vtk file of all the paths in a single vtk for visualization
 //
 // Usage: rosrun brush_traj_planning create_model hair.ply hair_model paths/
 #include <iostream>
