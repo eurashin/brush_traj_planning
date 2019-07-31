@@ -76,7 +76,7 @@ int main (int argc, char** argv)
   
   // Downsampling the point cloud for meshing
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr hair_cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
-  const float voxel_grid_size = 0.005f;
+  const float voxel_grid_size = 0.01f;
   pcl::VoxelGrid<pcl::PointXYZRGB> vox_grid;
   vox_grid.setInputCloud (subcloud);
   vox_grid.setLeafSize (voxel_grid_size, voxel_grid_size, voxel_grid_size);
