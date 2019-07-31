@@ -3,6 +3,10 @@
  * 
  * Call: rosrun process_pcl snapshot [filename]
  *
+ * Output: 
+ * 1) [filename].ply (colored)
+ * 2) [filename]_no_color.ply (uncolored pointcloud)
+ *
  */
 
 #include <ros/ros.h>
