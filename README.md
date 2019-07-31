@@ -3,3 +3,10 @@ This package functionality is associated with any point cloud manipulations. Thi
 
 ## Dependencies: OpenCV 
 This package requires OpenCV 3.2.
+
+## Programs 
+Note that all instances of "output filename" do not have extensions, because multiple files will be created with the same base string but of different extension types. 
+### Take a pointcloud snapshot
+```
+rosrun brush_traj_planning [output filename]
+```
