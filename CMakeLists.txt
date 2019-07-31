@@ -225,13 +225,7 @@ add_executable(live_registration src/live_registration.cpp)
 target_link_libraries(live_registration ${catkin_LIBRARIES})
 target_link_libraries(live_registration ${OpenCV_LIBRARIES})
 
-add_executable(snapshot_unfiltered src/snapshot_unfiltered.cpp)
-target_link_libraries(snapshot_unfiltered ${catkin_LIBRARIES})
-target_link_libraries(snapshot_unfiltered ${PCL_LIBRARIES})
-
 include_directories(${OpenCV_INCLUDE_DIRS})
-add_executable(surface_matching src/surface_matching.cpp)
-target_link_libraries(surface_matching ${OpenCV_LIBRARIES})
 
 find_package(VTK REQUIRED NO_MODULE)
 add_executable(create_model src/create_model.cpp)

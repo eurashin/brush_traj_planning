@@ -1,9 +1,7 @@
 /*
- * Takes a "snapshot" using the Kinect and saves the pointcloud to a file test_pcd.pcd.
+ * Takes a "snapshot" using the Kinect and saves the pointcloud to a .ply file.
  * 
- * Call: rosrun process_pcl snapshot input:=/camera/depth/points
- *
- *
+ * Call: rosrun process_pcl snapshot [filename]
  *
  */
 

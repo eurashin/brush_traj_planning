@@ -1,6 +1,9 @@
 #ifndef HELPER_FUNCTIONS
 #define HELPER_FUNCTIONS
 
+/* Helper functions for the A* planning process
+ */
+
 #include <iostream>
 #include <fstream>
 #include <math.h>

@@ -1,8 +1,10 @@
 // CREATES MODEL WITH PATHS
 // Inputs: 
 // 1) color pointcloud .ply filename
-// 2) filename for newly exported .vtk model
-// 3) filename for newly exported .vtk path info
+// 2) filename for newly exported .vtk model, NO EXTENSION 
+// 3) name of the directory to output paths
+//
+// Usage: rosrun brush_traj_planning create_model hair.ply hair_model paths/
 #include <iostream>
 #include <thread>
 #include <vector>

@@ -1,3 +1,7 @@
+// Will listen to the /camera/depth/points topic and align an original model pointcloud to the 
+// new scene. 
+//
+// Usage: rosrun brush_traj_planning live_registration [model.ply]
 #include <ros/ros.h>
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
@@ -103,7 +107,7 @@ int main(int argc, char** argv)
 {
     if (argc < 2)
     {
-        ROS_ERROR("Not enough input arguments");
+        ROS_ERROR("Not enough input arguments. Usage: rosrun brush_traj_planning live_registration [model.ply]");
         exit(1);
     }
 

@@ -1,6 +1,8 @@
 #ifndef CLOUD_CONVERSIONS
 #define CLOUD_CONVERSIONS
 
+/* Tools used for general cloud processing procedures, such as filtering, downsampling, etc. */
+
 #include <ros/ros.h>
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
