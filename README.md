@@ -8,5 +8,14 @@ This package requires OpenCV 3.2.
 Note that all instances of "output filename" do not have extensions, because multiple files will be created with the same base string but of different extension types. 
 ### Take a pointcloud snapshot
 ```
-rosrun brush_traj_planning [output filename]
+rosrun brush_traj_planning snapshot [output filename]
+```
+### Create a model from a colored pointcloud
+```
+rosrun brush_traj_planning create_model [colored pointcloud.ply] [output filename] [path output directory]
+```
+### Send trajectories to the ada_server
+```
+(In another terminal) rosrun ada_server waypoint_server
+rosrun brush_traj_planning follow_path [path filename.ply]
 ```
