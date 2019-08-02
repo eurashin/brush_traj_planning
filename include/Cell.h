@@ -84,6 +84,15 @@ class Cell {
             compute_normal(p1, p2, p3); 
             flag = false;
         }
+
+        bool equals(Cell cell) {
+            Point coords = cell.get_coord(); 
+            return(
+                    this->coord.x == coords.x &&
+                    this->coord.y == coords.y &&
+                    this->coord.z == coords.z
+                  ); 
+        }
         
         bool is_edge() {
             return(neighbors.size() == 2);

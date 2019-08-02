@@ -113,7 +113,7 @@ int main (int argc, char** argv)
   
 
   // Plan paths from our given mesh model
-  a_star_path(hairmeshname, argv[3]);  
+  find_paths(hairmeshname, argv[3]);  
 
 
   return (0);

@@ -4,6 +4,7 @@ project(brush_traj_planning)
 ## Compile as C++11, supported in ROS Kinetic and newer
 #add_compile_options(-std=c++11)
 add_compile_options(-std=c++17 -g)
+include_directories("include")
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -116,7 +117,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
+  INCLUDE_DIRS include
 #  LIBRARIES process_pcl
 #  CATKIN_DEPENDS pcl_conversions pcl_ros roscpp sensor_msgs
 #  DEPENDS system_lib
@@ -210,6 +211,9 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+install(DIRECTORY "include"
+  DESTINATION "${CATKIN_PACKAGE_INCLUDE_DESTINATION}"
+)
 find_package(OpenCV REQUIRED)
 find_package(PCL REQUIRED)
 

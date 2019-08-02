@@ -12,7 +12,6 @@
 #include <vtkCellArray.h>
 #include <vtkIdList.h>
 #include <fstream>
-#include "helper_functions.h"
 
 using namespace std; 
 
